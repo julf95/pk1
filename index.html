@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Kurikulum SR Ar Raudhah</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+tailwind.config = {
+darkMode:'class'
+}
+</script>
+
+<style>
+
+body{
+font-family:Inter,sans-serif;
+}
+
+.accordion{
+transition:.3s;
+}
+
+.fade{
+animation:fade .4s ease;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(10px);
+}
+to{
+opacity:1;
+transform:none;
+}
+}
+
+</style>
+
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900">
+
+<header class="sticky top-0 z-50 bg-white dark:bg-slate-800 shadow">
+
+<div class="max-w-7xl mx-auto p-4">
+
+<div class="flex justify-between items-center">
+
+<div>
+<h1 class="text-3xl font-bold text-emerald-600">
+📚 KURIKULUM SR AR RAUDHAH
+</h1>
+
+<p class="text-slate-500">
+Sistem Pengurusan Dokumen Kurikulum Sekolah Rendah Ar Raudhah
+</p>
+</div>
+
+<div class="flex gap-2">
+
+<button id="darkBtn"
+class="px-4 py-2 rounded bg-slate-200">
+🌙
+</button>
+
+<button id="adminBtn"
+class="px-4 py-2 bg-emerald-500 text-white rounded">
+⚙️ Admin
+</button>
+
+</div>
+
+</div>
+
+<div class="mt-4">
+
+<input
+id="search"
+type="text"
+placeholder="Search Documents..."
+class="w-full p-3 rounded-xl border"
+/>
+
+</div>
+
+</div>
+
+</header>
+
+<div class="max-w-7xl mx-auto p-5">
+
+<div class="grid md:grid-cols-2 gap-4 mb-6">
+
+<div class="bg-white p-5 rounded-xl shadow">
+<h3>Total Kategori</h3>
+<div id="totalCategory"
+class="text-3xl font-bold">
+0
+</div>
+</div>
+
+<div class="bg-white p-5 rounded-xl shadow">
+<h3>Total Fail</h3>
+<div id="totalFiles"
+class="text-3xl font-bold">
+0
+</div>
+</div>
+
+</div>
+
+<div id="categoryContainer"></div>
+
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/WEBAPP_ID/exec";
+
+let DATA=[];
+
+async function loadData(){
+
+ const res = await fetch(
+ `${API}?action=getData`
+ );
+
+ const json = await res.json();
+
+ DATA = json.categories;
+
+ render(DATA);
+}
+
+function render(categories){
+
+ let html='';
+
+ let totalFiles=0;
+
+ categories.forEach(cat=>{
+
+ totalFiles += cat.files.length;
+
+ html += `
+ <div class="bg-white rounded-2xl shadow mb-4 fade">
+
+ <button
+ onclick="toggle('${cat.id}')"
+ class="w-full p-5 flex justify-between">
+
+ <div>
+ <span class="font-semibold">
+ ${cat.name}
+ </span>
+
+ <span class="ml-2 text-sm text-gray-500">
+ (${cat.files.length} fail)
+ </span>
+ </div>
+
+ <div>▼</div>
+
+ </button>
+
+ <div
+ id="cat-${cat.id}"
+ class="hidden border-t">
+
+ ${cat.files.map(file=>`
+
+ <div class="p-4 flex justify-between">
+
+ <div>
+
+ 📄 ${file.title}
+
+ <div class="text-sm text-gray-500">
+ ${file.date}
+ </div>
+
+ </div>
+
+ <a
+ href="${file.url}"
+ target="_blank"
+ class="bg-emerald-500 text-white px-4 py-2 rounded">
+
+ View Fail
+
+ </a>
+
+ </div>
+
+ `).join('')}
+
+ </div>
+
+ </div>
+ `;
+ });
+
+ categoryContainer.innerHTML=html;
+
+ totalCategory.innerText=categories.length;
+ totalFiles.innerText=totalFiles;
+}
+
+function toggle(id){
+
+ document
+ .getElementById(`cat-${id}`)
+ .classList.toggle('hidden');
+}
+
+search.addEventListener("input",e=>{
+
+ const q =
+ e.target.value.toLowerCase();
+
+ const filtered = DATA.filter(cat=>{
+
+ return (
+ cat.name.toLowerCase().includes(q)
+
+ ||
+
+ cat.files.some(f=>
+ f.title.toLowerCase().includes(q)
+ )
+
+ );
+
+ });
+
+ render(filtered);
+
+});
+
+darkBtn.onclick=()=>{
+
+ document.documentElement
+ .classList.toggle("dark");
+};
+
+loadData();
+
+</script>
+
+</body>
+</html>
