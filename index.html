@@ -254,6 +254,48 @@ darkBtn.onclick=()=>{
 
 loadData();
 
+document.addEventListener("DOMContentLoaded", () => {
+  const adminBtn = document.getElementById("admin-btn");
+
+  if (!adminBtn) {
+    console.error("Admin button tidak dijumpai");
+    return;
+  }
+
+  adminBtn.addEventListener("click", () => {
+    openAdminPanel();
+  });
+});
+
+function openAdminPanel() {
+  const panel = document.getElementById("admin-overlay");
+
+  if (!panel) {
+    console.error("Admin overlay tak wujud");
+    return;
+  }
+
+  panel.classList.remove("hidden");
+
+  // optional mode
+  document.getElementById("stat-mode").textContent = "Admin";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.getElementById("close-admin");
+  const overlay = document.getElementById("admin-overlay");
+  const backdrop = document.getElementById("admin-backdrop");
+
+  function closeAdmin() {
+    overlay.classList.add("hidden");
+  }
+
+  closeBtn?.addEventListener("click", closeAdmin);
+  backdrop?.addEventListener("click", closeAdmin);
+});
+
+
+
 </script>
 
 </body>
